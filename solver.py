@@ -105,6 +105,6 @@ if __name__ == "__main__":
     while not(p<=1 and p>=0):
         p = float(input("Ingrese la probabilidad de conexión entre nodos: "))
 
-    for i in range(1000):
+    for i in range(100):
         solver(n,p)
     print(casosPosibles)
