@@ -1,6 +1,7 @@
 from ortools.constraint_solver import pywrapcp, routing_enums_pb2
 import networkx as nx
 import matplotlib.pyplot as plt
+import multiprocessing
 
 #Inicializar parametros
 mymatrix = [
@@ -12,7 +13,6 @@ mymatrix = [
 
 manager = None
 data = None
-casosPosibles = 0
 
 def create_data_model(basematrix):
         """Stores the data for the problem."""
@@ -88,23 +88,199 @@ def solver(n,p):
     maxdistance = calculate_max_distance(mymatrix)
 
     if solution and distance_counter(routing, solution) < maxdistance:
+        return 1
+    return 0
 
-        global casosPosibles
-        casosPosibles = casosPosibles + 1
 
-        #print_solution(manager, routing, solution)
+def loop(iteration):
+    return solver(iteration[0],iteration[1])
+
 
 if __name__ == "__main__":
 
+    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
 
-    n=-1
-    while not(n>0):
-        n = int(input("Ingrese el número de nodos: "))
+    option = 0
 
-    p=-1
-    while not(p<=1 and p>=0):
-        p = float(input("Ingrese la probabilidad de conexión entre nodos: "))
+    print("¿Que desea realizar?")
+    print("1. Analizar la probabilidad de acierto de un grafo aleatorio con distintas probabilidades de conexión")
+    print("2. Analizar la probabilidad de acierto de un grafo aleatorio con distinto número de nodos")
+    print("3. Analizar la probabilidad de acierto de un grafo aleatorio con una probabilidad de conexión dependiente del número de nodos del mismo\n")
+    while option<1 or option > 3:
+        option = int(input("Ingrese la opción: "))
 
-    for i in range(100):
-        solver(n,p)
-    print(casosPosibles)
+    if option == 1:
+        n = -1
+        while not (n > 0):
+            n = int(input("Ingrese el número de nodos: "))
+
+        p = -1
+        while not (p > 0):
+            p = int(input("Ingrese el número de probabilidades que desea probar: "))
+
+        probabilidades = []
+
+        print("A continuación, ingrese las probabilidades que desea utilizar:")
+        for i in range(p):
+            probabilidades.append(float(input("")))
+
+        niteraciones = -1
+        while not (niteraciones > 0):
+            niteraciones = int(input("Ingrese el número de iteraciones que desea realizar para probar cada grafo aleatorio: "))
+
+        probabilidades.sort()
+        aciertos = []
+
+        print("\nA continuación se imprimrán los aciertos asociados con cada probabilidad de conexión del grafo:")
+
+        for prob in probabilidades:
+            actualGraph = []
+
+            for i in range(niteraciones):
+                actualGraph.append((n, prob))
+
+            casosPosibles = pool.map(loop, actualGraph)
+            aux = sum(casosPosibles)
+            print("P=", prob, " , A=", aux)
+            aciertos.append(aux)
+
+        plt.plot(probabilidades, aciertos, 'bo')
+        #plt.axis([-0.1, 1.1, -(1 / 100) * niteraciones, niteraciones + (1 / 100) * niteraciones])
+        plt.ylabel('Número de aciertos alcanzados')
+        plt.xlabel('Probabilidad de conexión del grafo')
+        plt.suptitle('Relación Probabilidad del Grafo Vs Número de aciertos')
+        plt.show()
+
+        aciertos = list(map((lambda x: x / niteraciones), aciertos))
+
+        plt.plot(probabilidades, aciertos, 'ro')
+        #plt.axis([-0.1, 1.1, -0.1, 1.1])
+        plt.ylabel('Probabilidad de tener un camino Hamiltoniano')
+        plt.xlabel('Probabilidad de conexión del grafo')
+        plt.suptitle('Relación Probabilidad del Grafo Vs Probabilidad de acierto')
+        plt.show()
+
+    elif option == 2:
+        p = -1
+        while not (p > 0):
+            p = float(input("Ingrese la probabilidad de conexión de los grafos: "))
+
+        n = -1
+        while not (n > 0):
+            n = int(input("Ingrese el número de grafos que desea probar: "))
+
+        nodos = []
+
+        print("A continuación, ingrese el número de nodos que desea utilizar para cada grafo:")
+        for i in range(n):
+            nodos.append(int(input("")))
+
+        niteraciones = -1
+        while not (niteraciones > 0):
+            niteraciones = int(input("Ingrese el número de iteraciones que desea realizar para probar cada grafo aleatorio: "))
+
+        nodos.sort()
+        aciertos = []
+
+        print("\nP=", p)
+
+        for nodo in nodos:
+            actualGraph = []
+
+            for i in range(niteraciones):
+                actualGraph.append((nodo, p))
+
+            casosPosibles = pool.map(loop, actualGraph)
+            aux = sum(casosPosibles)
+            print("N=", nodo, " , A=", aux)
+            aciertos.append(aux)
+
+        plt.plot(nodos, aciertos, 'bo')
+        #plt.axis([-0.1, 1.1, -(1 / 100) * niteraciones, niteraciones + (1 / 100) * niteraciones])
+        plt.ylabel('Número de aciertos alcanzados')
+        plt.xlabel('Número de nodos del grafo aleatorio')
+        plt.suptitle('Relación Número de nodos Vs Número de aciertos')
+        plt.show()
+
+        aciertos = list(map((lambda x: x / niteraciones), aciertos))
+
+        plt.plot(nodos, aciertos, 'ro')
+        #plt.axis([-0.1, 1.1, -0.1, 1.1])
+        plt.ylabel('Probabilidad de tener un camino Hamiltoniano')
+        plt.xlabel('Número de nodos del grafo aleatorio')
+        plt.suptitle('Relación Número de nodos Vs Probabilidad de acierto')
+        plt.show()
+
+    elif option == 3:
+        n = -1
+        while not (n > 0):
+            n = int(input("Ingrese el número de grafos que desea probar: "))
+
+        nodos = []
+
+        print("A continuación, ingrese el número de nodos que desea utilizar para cada grafo:")
+        for i in range(n):
+            nodos.append(int(input("")))
+
+        niteraciones = -1
+        while not (niteraciones > 0):
+            niteraciones = int(input("Ingrese el número de iteraciones que desea realizar para probar cada grafo aleatorio: "))
+
+        nodos.sort()
+        aciertos = []
+        probabilidades = []
+
+        print("\nA continuación se imprimrán los aciertos de cada grafo, cuya probabilidad depende del número de nodos del mismo:")
+
+        for nodo in nodos:
+            p = pow(nodo, -1+0.651)
+            actualGraph = []
+
+            for i in range(niteraciones):
+                actualGraph.append((nodo, p))
+
+            casosPosibles = pool.map(loop, actualGraph)
+            aux = sum(casosPosibles)
+            print("P= ", p, " , N=", nodo, " , A=", aux)
+            aciertos.append(aux)
+            probabilidades.append(p)
+
+        plt.plot(nodos, probabilidades, 'bo')
+        # plt.axis([-0.1, 1.1, -(1 / 100) * niteraciones, niteraciones + (1 / 100) * niteraciones])
+        plt.ylabel('Probabilidad de conexión del grafo')
+        plt.xlabel('Número de nodos del grafo')
+        plt.suptitle('Relación Número de nodos Vs Probabilidad de conexión del grafo')
+        plt.show()
+
+        plt.plot(probabilidades, aciertos, 'bo')
+        # plt.axis([-0.1, 1.1, -(1 / 100) * niteraciones, niteraciones + (1 / 100) * niteraciones])
+        plt.ylabel('Número de aciertos alcanzados')
+        plt.xlabel('Probabilidad de conexión del grafo')
+        plt.suptitle('Relación Probabilidad de conexión del grafo Vs Número de aciertos')
+        plt.show()
+
+        plt.plot(nodos, aciertos, 'bo')
+        # plt.axis([-0.1, 1.1, -(1 / 100) * niteraciones, niteraciones + (1 / 100) * niteraciones])
+        plt.ylabel('Número de aciertos alcanzados')
+        plt.xlabel('Número de nodos del grafo aleatorio')
+        plt.suptitle('Relación Número de nodos Vs Número de aciertos')
+        plt.show()
+
+        aciertos = list(map((lambda x: x / niteraciones), aciertos))
+
+        plt.plot(nodos, aciertos, 'ro')
+        # plt.axis([-0.1, 1.1, -0.1, 1.1])
+        plt.ylabel('Probabilidad de tener un camino Hamiltoniano')
+        plt.xlabel('Número de nodos del grafo aleatorio')
+        plt.suptitle('Relación Número de nodos Vs Probabilidad de acierto')
+        plt.show()
+
+    # p=-1
+    # while not(p<=1 and p>=0):
+    #     p = float(input("Ingrese la probabilidad de conexión entre nodos: "))
+
+
+
+
+
+
