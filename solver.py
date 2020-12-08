@@ -68,8 +68,10 @@ def solver(n,p):
         return data['distance_matrix'][from_node][to_node]
 
     G = nx.erdos_renyi_graph(n, p)
+
     #nx.draw(G, with_labels=True)
     #plt.show()
+
     m = nx.linalg.graphmatrix.adjacency_matrix(G).toarray()
     mymatrix = padding(m)
     data = create_data_model(mymatrix)
@@ -131,7 +133,7 @@ if __name__ == "__main__":
         probabilidades.sort()
         aciertos = []
 
-        print("\nA continuación se imprimrán los aciertos asociados con cada probabilidad de conexión del grafo:")
+        print("\nA continuación se imprimirán los aciertos asociados con cada probabilidad de conexión del grafo:")
 
         for prob in probabilidades:
             actualGraph = []
@@ -230,10 +232,10 @@ if __name__ == "__main__":
         aciertos = []
         probabilidades = []
 
-        print("\nA continuación se imprimrán los aciertos de cada grafo, cuya probabilidad depende del número de nodos del mismo:")
+        print("\nA continuación se imprimirán los aciertos de cada grafo, cuya probabilidad depende del número de nodos del mismo:")
 
         for nodo in nodos:
-            p = pow(nodo, -1+0.651)
+            p = pow(nodo, -1+0.651)  ################################################## FUNCIÓN A CAMBIAR ##################################################
             actualGraph = []
 
             for i in range(niteraciones):
@@ -274,13 +276,3 @@ if __name__ == "__main__":
         plt.xlabel('Número de nodos del grafo aleatorio')
         plt.suptitle('Relación Número de nodos Vs Probabilidad de acierto')
         plt.show()
-
-    # p=-1
-    # while not(p<=1 and p>=0):
-    #     p = float(input("Ingrese la probabilidad de conexión entre nodos: "))
-
-
-
-
-
-
