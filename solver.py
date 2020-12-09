@@ -157,7 +157,7 @@ if __name__ == "__main__":
 
         plt.plot(probabilidades, aciertos, 'ro')
         #plt.axis([-0.1, 1.1, -0.1, 1.1])
-        plt.ylabel('Probabilidad de tener un camino Hamiltoniano')
+        plt.ylabel('Probabilidad de tener un ciclo Hamiltoniano')
         plt.xlabel('Probabilidad de conexión del grafo')
         plt.suptitle('Relación Probabilidad del Grafo Vs Probabilidad de acierto')
         plt.show()
@@ -208,7 +208,7 @@ if __name__ == "__main__":
 
         plt.plot(nodos, aciertos, 'ro')
         #plt.axis([-0.1, 1.1, -0.1, 1.1])
-        plt.ylabel('Probabilidad de tener un camino Hamiltoniano')
+        plt.ylabel('Probabilidad de tener un ciclo Hamiltoniano')
         plt.xlabel('Número de nodos del grafo aleatorio')
         plt.suptitle('Relación Número de nodos Vs Probabilidad de acierto')
         plt.show()
@@ -272,7 +272,7 @@ if __name__ == "__main__":
 
         plt.plot(nodos, aciertos, 'ro')
         # plt.axis([-0.1, 1.1, -0.1, 1.1])
-        plt.ylabel('Probabilidad de tener un camino Hamiltoniano')
+        plt.ylabel('Probabilidad de tener un ciclo Hamiltoniano')
         plt.xlabel('Número de nodos del grafo aleatorio')
         plt.suptitle('Relación Número de nodos Vs Probabilidad de acierto')
         plt.show()
